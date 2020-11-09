@@ -17,9 +17,9 @@ RUN addgroup -S appuser \
 USER appuser
 WORKDIR /src
 
+COPY config.json /src/config.json
 COPY --from=builder /src/node_modules /src/node_modules
 COPY --from=builder /src/package.json /src/package.json
-COPY --from=builder /src/config.json /src/config.json
 COPY --from=builder /src/app /src/app
 EXPOSE 3000
 CMD ["node", "/src/app/app.js", "--max-old-space-size=64"]

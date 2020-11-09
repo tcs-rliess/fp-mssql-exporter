@@ -7,9 +7,9 @@ import * as async from "async";
 const VERSION = JSON.parse(fs.readFileSync("package.json").toString()).version;
 
 import S3 from 'aws-sdk/clients/s3';
-const s3 = new S3(config.s3_credentials);
+const s3 = new S3(_.extend({apiVersion: "2006-03-01"}, config.aws_credentials));
 import SQS from 'aws-sdk/clients/sqs';
-const sqs = new SQS(config.sqs_credentials);
+const sqs = new SQS(_.extend({apiVersion: "2012-11-05"}, config.aws_credentials));
 
 let QUERY_RUNNING = 0;
 
@@ -22,7 +22,10 @@ class Exporter {
 				process.exit(1);
 			}
 			console.log(`Database connected.`);
-			setInterval(this.getData, 5000);
+			// Start the getData routine once on startup
+			this.getData();
+			// And then every n seconds
+			setInterval(this.getData, config.execute_interval * 1000);
 		});
 
 	}
@@ -63,7 +66,7 @@ class Exporter {
 	}
 
 	private getData = () => {
-		console.log("Getting data")
+		console.log(`Trying to fetch data. Calling stored procedure '${config.mssql_sproc_name}'`)
 		QUERY_RUNNING++;
 		if (QUERY_RUNNING > 1) {
 			// There is already a query running.
@@ -84,7 +87,9 @@ class Exporter {
 					process.exit(1);
 				}
 				QUERY_RUNNING = 0;
-				
+				if (resp.recordset.length === 0) {
+					console.log(`No data received. Waiting ${config.execute_interval} seconds.`)
+				}
 				if (resp.recordset.length) {
 					// We found some data.
 					console.log("DATA", resp.recordset)
@@ -158,7 +163,6 @@ class Exporter {
 			}
 			const lastid = _.last(rows)[config.cursor_name];
 			console.log("SUCCESS", JSON.stringify(results, null, 2));
-			console.log("Setting ID in S3");
 			this.cursorSet(lastid, (err, resp) => {
 				if (err) {
 					console.log("Error setting last cursor", err);

@@ -76,9 +76,17 @@ Example:
 | MSSQL_SPROC_NAME       | null           | required                           |
 | AWS_ACCESS_KEY_ID      | NONE           | required                           |
 | AWS_SECRET_ACCESS_KEY  | NONE           | required                           |
-| AWS_SQS_QUEUE          | null           | required                           |
+| AWS_SQS_QUEUE          | null           | MSSQL-Exporter.fifo                |
 | FLEETPLAN_QUEUE_UUID   | null           | required                           |
 | CURSOR_NAME            | id             | The name of the range key          |
-| RUN_MODE               | exporter       | Currently only "exporter"          |
 | EXECUTE_INTERVAL       | 600            | Execute interval in seconds        |
 
+## Build the docker container
+
+`docker build -t fp-mssql-exporter .`
+
+## Run the docker container
+
+Configure the docker.env file with the correct values (see environment variables above).
+
+Run: `docker run -ti --env-file docker.env fp-mssql-exporter`

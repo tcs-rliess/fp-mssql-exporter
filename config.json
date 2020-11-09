@@ -1,5 +1,10 @@
 {
-    
+    "aws_credentials": {
+        "region": "eu-central-1",
+        "accessKeyId": null,
+        "secretAccessKey": null
+    },
+    "aws_sqs_queue": "MSSQL-Exporter.fifo",
     "cursor_name": "id",
     "execute_interval": 600,
     "mssql": {
@@ -15,18 +20,6 @@
         }
     },
     "s3": {
-        "Bucket": "fp-mssql-exporter-cursors"
-    },
-    "s3_credentials": {
-        "apiVersion": "2006-03-01",
-        "region": "eu-central-1",
-        "accessKeyId": "AKIASPZY3CT3FUV43Z7P",
-        "secretAccessKey": "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"
-    },
-    "sqs_credentials": {
-        "apiVersion": "2012-11-05",
-        "region": "eu-central-1",
-        "accessKeyId": null,
-        "secretAccessKey": null
+        "Bucket": "mssql-exporter-cursors"
     }
 }
